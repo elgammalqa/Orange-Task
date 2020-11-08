@@ -53,6 +53,7 @@ kubectl apply app.yaml
 
 kubectl get pods
 
+## to test
 
 minikube service toystore-app-server --url
 
