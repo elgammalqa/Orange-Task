@@ -1,0 +1,122 @@
+statefulset:
+    enabled: false
+  deploymentStrategy: Recreate
+  image:
+
+    repository: sonatype/nexus3
+    tag: 3.28.1
+    pullPolicy: IfNotPresent
+  
+  nexus:
+    dockerSupport:
+      enabled: true
+    env:
+      - name: install4jAddVmParams
+        value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=2G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      - name: NEXUS_SECURITY_RANDOMPASSWORD
+        value: "true"
+
+    resources: {}
+
+    dockerPort: 18443
+    nexusPort: 8081
+  
+    securityContext:
+      fsGroup: 2000
+    podAnnotations: {}
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 30
+      failureThreshold: 6
+      timeoutSeconds: 10
+      path: /
+    readinessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 30
+      failureThreshold: 6
+      timeoutSeconds: 10
+      path: /
+    hostAliases: []
+
+  
+  
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+  
+  serviceAccount:
+    create: true
+    
+    name:
+  
+  deployment:
+    annotations: {}
+
+    initContainers:
+  
+    postStart:
+      command:    # '["/bin/sh", "-c", "ls"]'
+    preStart:
+      command:    # '["/bin/rm", "-f", "/path/to/lockfile"]'
+    terminationGracePeriodSeconds: 120
+    additionalContainers:
+    additionalVolumes:
+    additionalVolumeMounts:
+  
+  
+  ingress:
+    enabled: false
+    annotations: {kubernetes.io/ingress.class: nginx}
+
+    hostPath: /
+    hostRepo: repo.demo
+    hostDocker: registry.demo
+    tls: []
+
+  
+  
+  service:
+    name: nexus3
+    enabled: true
+    labels: {}
+    annotations: {}
+    ports:
+    - name: nxrm-svc
+      targetPort: nexus-ui
+      port: 8081
+    serviceType: ClusterIP
+  
+  
+  route:
+    enabled: false
+    name: docker
+    portName: docker
+    labels:
+    annotations:
+    # path: /docker
+  
+  nexusProxyRoute:
+    enabled: false
+    labels:
+    annotations:
+    # path: /nexus
+  
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+
+    storageSize: 8Gi
+  
+  
+  tolerations: []
+  
+  config:	
+    enabled: false	
+    mountPath: /sonatype-nexus-conf	
+    data: []
+  
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: []
